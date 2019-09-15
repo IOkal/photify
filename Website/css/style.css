@@ -15,6 +15,13 @@
 *	Edit this section
 *
 * ======================================================= */
+.box__dragndrop,
+.box__uploading,
+.box__success,
+.box__error {
+  display: none;
+}
+
 body {
   font-family: "Inconsolata", Arial, sans-serif;
   font-weight: 300;
@@ -364,6 +371,13 @@ fakeh2 {
 
 #fh5co-services {
   padding-bottom: 0;
+}
+
+.box__dragndrop,
+.box__uploading,
+.box__success,
+.box__error {
+  display: none;
 }
 
 .fh5co-explore {
