@@ -14,6 +14,21 @@ aws.config.update({
 });
 
 
+var NodeGeocoder = require('node-geocoder');
+ 
+var options = {
+  provider: 'google',
+ 
+  // Optional depending on the providers
+  httpAdapter: 'https', // Default
+  apiKey: 'AIzaSyA54nJFeUvJHWcl3U0Sy9LYKZuvDDtu2Yk', // for Mapquest, OpenCage, Google Premier
+  formatter: null         // 'gpx', 'string', ...
+};
+ 
+var geocoder = NodeGeocoder(options);
+
+
+
 let s3 = new aws.S3();
 
 // Set The Storage Engine
@@ -100,8 +115,49 @@ app.post('/upload', (req, res) => {
                             new ExifImage({ image : imagedata }, function (error, exifData) {
                                 if (error)
                                     console.log('Error: '+error.message);
-                                else
-                                    console.log(exifData); // Do something with your data!
+                                else {
+                                  console.log(exifData.gps); // Do something with your data!
+
+                                  if(exifData.gps.hasOwnProperty('GPSLatitude') && exifData.gps.hasOwnProperty('GPSLongitude')){
+                                    console.log(`${exifData.gps.GPSLatitude[0]}.${exifData.gps.GPSLatitude[1]}`); // Do something with your data!
+                                    console.log(`${exifData.gps.GPSLongitude[0]}.${exifData.gps.GPSLongitude[1]}`); // Do something with your data!
+  
+                                    geocoder.reverse({lat:`${exifData.gps.GPSLatitude[0]}.${exifData.gps.GPSLatitude[1]}`, lon:`-${exifData.gps.GPSLongitude[0]}.${exifData.gps.GPSLongitude[1]}`})
+                                            .then(function(res) {
+                                              console.log(res);
+                                            })
+                                            .catch(function(err) {
+                                              console.log(err);
+                                            });
+                                  }
+                                  else{
+
+                                    const vision = require('@google-cloud/vision');
+
+                                    // Creates a client
+                                    const client = new vision.ImageAnnotatorClient();
+
+                                    /**
+                                     * TODO(developer): Uncomment the following line before running the sample.
+                                     */
+                                    const fileName = imagedata;
+
+                                    // Performs landmark detection on the local file
+                                    try{
+
+                                      const [result] = await client.landmarkDetection(fileName);
+                                      const landmarks = result.landmarkAnnotations;
+                                      console.log('Landmarks:');
+                                      landmarks.forEach(landmark => console.log(landmark));
+  
+                                    }
+                                    catch (e){
+                                      console.log(e);
+                                    }
+
+                                  }
+
+                                }
                             });
                         } catch (error) {
                             console.log('Error: ' + error.message);
