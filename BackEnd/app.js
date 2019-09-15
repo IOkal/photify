@@ -5,6 +5,7 @@ const multerS3 = require("multer-s3");
 const ejs = require("ejs");
 const path = require("path");
 const download = require("image-downloader");
+const axios = require('axios');
 
 const config = require("./config.js");
 aws.config.update({
@@ -82,8 +83,8 @@ app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => res.render("index"));
 
-app.post("/upload", (req, res) => {
-  upload(req, res, err => {
+app.post("/upload", async (req, res) => {
+  upload(req, res, async err => {
     if (err) {
       res.render("index", {
         msg: err
@@ -100,6 +101,8 @@ app.post("/upload", (req, res) => {
           url: imageUrl,
           dest: "./images" // Save to /path/to/dest/image.jpg
         };
+
+        let queryData = '';
 
         download
           .image(imageoptions)
@@ -123,7 +126,8 @@ app.post("/upload", (req, res) => {
   
                                     geocoder.reverse({lat:`${exifData.gps.GPSLatitude[0]}.${exifData.gps.GPSLatitude[1]}`, lon:`-${exifData.gps.GPSLongitude[0]}.${exifData.gps.GPSLongitude[1]}`})
                                             .then(function(res) {
-                                              console.log(res);
+                                              console.log(res[0].city);
+                                              queryData = res[0].city;
                                             })
                                             .catch(function(err) {
                                               console.log(err);
@@ -136,37 +140,67 @@ app.post("/upload", (req, res) => {
                             console.log('Error: ' + error.message);
                         }
 
-                        const vision = require('@google-cloud/vision');
+                        if(queryData.length == 0){
+                          const vision = require('@google-cloud/vision');
 
-                        // Creates a client
-                        const client = new vision.ImageAnnotatorClient();
-
-                        /**
-                         * TODO(developer): Uncomment the following line before running the sample.
-                         */
-                        const fileName = imagedata;
-
-                        // Performs landmark detection on the local file
-                        try{
-
-                          const [result] = await client.landmarkDetection(fileName);
-                          const landmarks = result.landmarkAnnotations;
-                          console.log('Landmarks:');
-                          landmarks.forEach(landmark => console.log(landmark));
-
+                          // Creates a client
+                          const client = new vision.ImageAnnotatorClient();
+  
+                          /**
+                           * TODO(developer): Uncomment the following line before running the sample.
+                           */
+                          const fileName = imagedata;
+  
+                          // Performs landmark detection on the local file
+                          try{
+  
+                            const [result] = await client.landmarkDetection(fileName);
+                            const landmarks = result.landmarkAnnotations;
+                            console.log('Landmarks: ', landmarks[0].description);                         
+                            queryData = landmarks[0].description;
+  
+                          }
+                          catch (e){
+                            console.log(e);
+                          }
                         }
-                        catch (e){
-                          console.log(e);
-                        }
+
+
+
+
           })
           .catch(err => {
             console.error(err);
           });
 
-        res.render("index", {
-          msg: "File Uploaded!",
-          file: `https://wuproof.s3.amazonaws.com/${req.file.originalname}`
+          
+          if(queryData.length == 0){
+            queryData = 'Toronto';
+          }
+
+
+        let spotifyUrl = await axios.get(`https://api.spotify.com/v1/search`, {
+          params: {
+              q: "Toronto",
+              type: "playlist",
+              limit: 1
+          }, 
+          headers: {
+              Authorization: 'Bearer BQB5UtUruIOT7BQ0_W1N3aLMuCHVRnM0QJXOgivu28NQqn_B6WfX2LUMc5gZRDP6RUaN5sh9PSMBpXM9-GfyC3MNoLHb0gEyVc25okfLHLh2Twdm6QKi3eEUy6yXr0Meek4_ELHN0J2NwYqPScITdEuAUpv9OlG4WtPUgw'
+          }
+        })
+        .then((res) => res.data)
+        .then((res) => res.playlists.items[0].external_urls.spotify)
+        .catch((err) => {
+          console.log(err.message);
         });
+
+        res.redirect(spotifyUrl);
+
+        // res.render("index", {
+        //   msg: "File Uploaded!",
+        //   file: `https://wuproof.s3.amazonaws.com/${req.file.originalname}`
+        // });
       }
     }
   });
