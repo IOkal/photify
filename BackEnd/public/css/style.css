@@ -907,6 +907,7 @@ fakeh2 {
   -webkit-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
+  color: #191414;
 }
 
 .btn {
@@ -932,7 +933,7 @@ fakeh2 {
 .btn:active,
 .btn:focus {
   background: #393e46 !important;
-  color: #fff;
+  color: #1db954;
   outline: none !important;
 }
 .btn.btn-default:hover,
