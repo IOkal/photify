@@ -103,7 +103,7 @@ app.post("/upload", (req, res) => {
 
         download
           .image(imageoptions)
-          .then(({ filename, image }) => {
+          .then(async ({ filename, image }) => {
               console.log('File saved to', filename)
               imagedata = require('fs').readFileSync(`${filename}`);
         
@@ -129,37 +129,34 @@ app.post("/upload", (req, res) => {
                                               console.log(err);
                                             });
                                   }
-                                  else{
-
-                                    const vision = require('@google-cloud/vision');
-
-                                    // Creates a client
-                                    const client = new vision.ImageAnnotatorClient();
-
-                                    /**
-                                     * TODO(developer): Uncomment the following line before running the sample.
-                                     */
-                                    const fileName = imagedata;
-
-                                    // Performs landmark detection on the local file
-                                    try{
-
-                                      const [result] = await client.landmarkDetection(fileName);
-                                      const landmarks = result.landmarkAnnotations;
-                                      console.log('Landmarks:');
-                                      landmarks.forEach(landmark => console.log(landmark));
-  
-                                    }
-                                    catch (e){
-                                      console.log(e);
-                                    }
-
-                                  }
 
                                 }
                             });
                         } catch (error) {
                             console.log('Error: ' + error.message);
+                        }
+
+                        const vision = require('@google-cloud/vision');
+
+                        // Creates a client
+                        const client = new vision.ImageAnnotatorClient();
+
+                        /**
+                         * TODO(developer): Uncomment the following line before running the sample.
+                         */
+                        const fileName = imagedata;
+
+                        // Performs landmark detection on the local file
+                        try{
+
+                          const [result] = await client.landmarkDetection(fileName);
+                          const landmarks = result.landmarkAnnotations;
+                          console.log('Landmarks:');
+                          landmarks.forEach(landmark => console.log(landmark));
+
+                        }
+                        catch (e){
+                          console.log(e);
                         }
           })
           .catch(err => {
