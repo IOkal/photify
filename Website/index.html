@@ -102,7 +102,7 @@
         <div class="container">
           <div class="row">
           <div class="col-md-12 text-center">
-            <form class="box" method="post" action="" enctype="multipart/form-data">
+            <!-- <form class="box" method="post" action="" enctype="multipart/form-data">
               <div class="box__input">
                 <input class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple />
                 <label for="file"><strong>Choose a file</strong><span class="box__dragndrop"> or drag it here</span>.</label>
@@ -111,7 +111,75 @@
               <div class="box__uploading">Uploading&hellip;</div>
               <div class="box__success">Done!</div>
               <div class="box__error">Error! <span></span>.</div>
-            </form>
+            </form> -->
+
+<!--             
+            <div id="uploads"></div>
+            <div class="dropzone" id="dropzone">Drag and Drop files here to upload</div>
+            <script>
+              (function() {
+                var dropzone = document.getElementById('dropzone');
+
+                dropzone.ondragover = function() {
+                  this.className = 'dropzone dragover';
+                  return false;
+                }
+              }());
+            </script> -->
+            
+            <!-- <div id="drop-area">
+                <form class="my-form">
+                  <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
+                  <input type="file" id="fileElem" multiple accept="image/*" onchange="handleFiles(this.files)">
+                  <label class="button" for="fileElem">Select some files</label>
+                </form>
+              </div> -->
+<!-- 
+              <form class="box" method="post" action="" enctype="multipart/form-data">
+                <div class="box__input">
+                  <input class="box__file" type="file" name="files[]" id="file" data-multiple-caption="{count} files selected" multiple />
+                  <label for="file"><strong>Choose a file</strong><span class="box__dragndrop"> or drag it here</span>.</label>
+                  <button class="box__butxton" type="submit">Upload</button>
+                </div>
+                <div class="box__uploading">Uploading&hellip;</div>
+                <div class="box__success">Done!</div>
+                <div class="box__error">Error! <span></span>.</div>
+              </form>
+              <script>
+                var div = document.createElement('div');
+                return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)
+              </script> -->
+
+              <!-- <div class="form-group"> 
+                  <label class="control-label" for="attachment1">Image:</label> 
+                  <input id="file1" name="file1" class="form-control" accept="image/*,application/pdf" type="file"/> 
+                </div> -->
+                <!-- <button id="submit" class="btn btn-primary">Submit</button> -->
+                <label class="control-label" for="attachment">Image:</label>
+                <input id="file1" class="form-control" type="file" onchange="encodeImageFileAsURL(this)" />
+                <pre>City: <span id="pulledCity"></span></pre>
+                <script>
+                function encodeImageFileAsURL(element) {
+                  
+                  
+                 
+                  var file = element.files[0];
+                  var reader = new FileReader();
+                  reader.onloadend = function() {
+                    console.log('RESULT', reader.result)
+                  }
+                  $.post('/form/submit', {
+
+                  // This should pass the file (in base64?) to the controller
+
+                  })
+                  reader.readAsDataURL(file);
+                  
+                }
+
+                
+                </script>
+     
           </div>
         </div>
     </section>
