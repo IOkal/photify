@@ -104,7 +104,7 @@ app.post("/upload", async (req, res) => {
 
         let queryData = '';
 
-        download
+        await download
           .image(imageoptions)
           .then(async ({ filename, image }) => {
               console.log('File saved to', filename)
@@ -139,6 +139,8 @@ app.post("/upload", async (req, res) => {
                         } catch (error) {
                             console.log('Error: ' + error.message);
                         }
+                        console.log("queryData : ", queryData);
+
 
                         if(queryData.length == 0){
                           const vision = require('@google-cloud/vision');
@@ -156,8 +158,15 @@ app.post("/upload", async (req, res) => {
   
                             const [result] = await client.landmarkDetection(fileName);
                             const landmarks = result.landmarkAnnotations;
-                            console.log('Landmarks: ', landmarks[0].description);                         
-                            queryData = landmarks[0].description;
+                            console.log('Landmarks: ', landmarks);
+                            if(landmarks.length > 0){
+                              console.log('Landmarks: ', landmarks[0].description);  
+                              queryData = landmarks[0].description;
+                            }
+                            else{
+                              queryData = 'Toronto';
+                            }                    
+                            
   
                           }
                           catch (e){
@@ -181,7 +190,7 @@ app.post("/upload", async (req, res) => {
 
         let spotifyUrl = await axios.get(`https://api.spotify.com/v1/search`, {
           params: {
-              q: "Toronto",
+              q: queryData,
               type: "playlist",
               limit: 1
           }, 
