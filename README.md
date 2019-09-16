@@ -1,12 +1,3 @@
-# NodeUploads
-
-An example of how to upload images locally with Node.js and Multer.
-
-### Version
-1.0.0
-
-## Usage
-
 ### Installation
 
 Install the dependencies
@@ -24,15 +15,5 @@ $ npm start
 
 ## App Info
 
-### Author
-
-Brad Traversy
-[Traversy Media](http://www.traversymedia.com)
-
-### Version
-
-1.0.0
-
-### License
-
-This project is licensed under the MIT License
+## Misc Notes
+We pass a photo or photo album (future) and the cloud (GCP?) processes 2 things: i) location, through metadata if available. If not, through what is available in the actual photo and what is returned by GCP’s Vision API ii) Find the artist (local) iii) optional: mood, and this future feature
